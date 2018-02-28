@@ -1,17 +1,31 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC, LinearSVC
+from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import MLPClassifier
+
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, roc_auc_score
+from sklearn.model_selection import train_test_split, GridSearchCV
 
 ### load the data
 apple = np.load('data/full_numpy_bitmap_apple.npy')
 axe = np.load('data/full_numpy_bitmap_axe.npy')
+hat = np.load('data/full_numpy_bitmap_hat.npy')
 butterfly = np.load('data/full_numpy_bitmap_butterfly.npy')
 fan = np.load('data/full_numpy_bitmap_fan.npy')
-hat = np.load('data/full_numpy_bitmap_hat.npy')
 
 ### data information
 apple = np.c_[apple, np.zeros(len(apple))]
+axe = np.c_[axe, np.zeros(len(axe))]
+hat = np.c_[hat, np.zeros(len(hat))]
+butterfly = np.c_[butterfly, np.zeros(len(butterfly))]
+fan = np.c_[fan, np.zeros(len(fan))]
+
 print(apple.shape)
+print(hat.shape)
 
 
 def plot_samples(input_array, rows=4, cols=5, title=''):
@@ -67,4 +81,23 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-plot_samples(apple, title='Sample cat drawings\n')
+### see sample images via a plot
+### plot_samples(apple, title='Sample apple drawings\n')
+### plot_samples(hat, title='Sample apple drawings\n')
+
+# merge the apple and hat arrays, and split the features (X) and labels (y). Convert to float32 to save some memory.
+X = np.concatenate((apple[:5000,:-1], axe[:5000,:-1], hat[:5000,:-1],  butterfly[:5000,:-1],  fan[:5000,:-1]), axis=0).astype('float32') # all columns but the last
+y = np.concatenate((apple[:5000,-1], axe[:5000,-1], hat[:5000,-1],  butterfly[:5000,-1],  fan[:5000,-1]), axis=0).astype('float32') # the last column
+
+# train/test split (divide by 255 to obtain normalized values between 0 and 1)
+# I will use a 50:50 split, since I want to start by training the models on 5'000 samples and thus have plenty of samples to spare for testing.
+X_train, X_test, y_train, y_test = train_test_split(X/255., y, test_size=0.5, random_state=0)
+
+
+
+clf_rf = RandomForestClassifier(n_jobs=-1, random_state=0)
+clf_rf.fit(X_train, y_train)
+print(clf_rf)
+y_pred_rf = clf_rf.predict(X_test)
+acc_rf = accuracy_score(y_test, y_pred_rf)
+print ('Random forest accuracy: ',acc_rf)
