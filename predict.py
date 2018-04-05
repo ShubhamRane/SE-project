@@ -16,10 +16,18 @@ mdataset = ['apple', 'axe', 'hat', 'butterfly', 'fan']
 import pickle
 clf = pickle.load(open('clf_rf.pickle', 'r'))
 
+from convert import test
+path = "/path/to/image";
+x = test.imageprepare(path);
+
 import sys
 if len(sys.argv) == 2:
-    nparray = sys.argv[1]
-    prediction = int ( clf.predict( [nparray] )[0] )
+    #path of the uploaded image as given by php
+    path = sys.argv[1]
+    #convert to array of 784
+    x = test.imageprepare(path)
+    #predict the value and find the name of object
+    prediction = int ( clf.predict( [x] )[0] )
     print(mdataset[prediction])
 else:
     print("Failure")
