@@ -77,32 +77,37 @@ def plot_confusion_matrix(cm, classes,
 ### see sample images via a plot
 ### plot_samples(apple, title='Sample apple drawings\n')
 ### plot_samples(hat, title='Sample apple drawings\n')
-apple = mdata_objects[0]
-axe = mdata_objects[1]
-hat = mdata_objects[2]
-butterfly = mdata_objects[3]
-fan = mdata_objects[4]
-
 # merge the apple and hat arrays, and split the features (X) and labels (y). Convert to float32 to save some memory.
-X = np.concatenate((apple[:5000,:-1], axe[:5000,:-1], hat[:5000,:-1],  butterfly[:5000,:-1],  fan[:5000,:-1]), axis=0).astype('float32') # all columns but the last
-y = np.concatenate((apple[:5000,-1], axe[:5000,-1], hat[:5000,-1],  butterfly[:5000,-1],  fan[:5000,-1]), axis=0).astype('float32') # the last column
+X_data = []
+y_data = []
+for data_object in mdata_objects:
+    X_data.append(data_object[:5000,:-1])
+    y_data.append(data_object[:5000,-1])
+X_data = tuple(X_data)
+y_data = tuple(y_data)
+
+X = np.concatenate(X_data, axis=0).astype('float32') # all columns but the last
+y = np.concatenate(y_data, axis=0).astype('float32') # the last column
 
 # train/test split (divide by 255 to obtain normalized values between 0 and 1)
 # I will use a 50:50 split, since I want to start by training the models on 5'000 samples and thus have plenty of samples to spare for testing.
 X_train, X_test, y_train, y_test = train_test_split(X/255., y, test_size=0.5, random_state=0)
 
 
+import sys
+if len(sys.argv) == 2 and sys.argv[1] == "train":
+    clf = RandomForestClassifier(n_jobs=-1)
+    clf.fit(X_train, y_train)
+else:
+    import pickle
+    clf = pickle.load(open('clf_rf.pickle','r'))
 
-clf_rf = KNeighborsClassifier(n_jobs=-1)
-clf_rf.fit(X_train, y_train)
-print(clf_rf)
-print(y_train[10000]);
-y_pred_rf = clf_rf.predict(X_test)
-acc_rf = accuracy_score(y_test, y_pred_rf)
-print ('KNeighborsClassifier Accuracy: ',acc_rf)
-
-
+y_pred = clf.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+print ('Accuracy: ',acc)
+#print clf.predict([X_test[4000]])
+#print y_test[4000]
 
 ### store the classifier
 import pickle
-pickle.dump(clf_rf, open('clf.pickle', 'wb'))
+pickle.dump(clf, open('clf_rf.pickle', 'wb'))
