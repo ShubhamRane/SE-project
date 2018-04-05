@@ -1,0 +1,9 @@
+<form action="input_file.htm" method="post" enctype="multipart/form-data">
+  <p>Choose a file:<br>
+    <input id="thisFile" name="myfile" size="50" maxlength="100000"
+       accept="text/*" type="file">
+    <a onclick="netscape.security.PrivilegeManager.enablePrivilege
+          ('UniversalFileRead');
+          alert(document.getElementById('thisFile').value)" href="#">
+          Show File Location</a></p>
+</form>

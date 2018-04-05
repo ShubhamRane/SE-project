@@ -1,0 +1,69 @@
+<html>
+<head>
+	<title>Demo Shapes</title>
+	<style type="text/css">
+	canvas {
+		border: 1px solid red;
+	}
+	</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+
+<script type="text/javascript">
+var canvas = document.getElementById('canvas');
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+var context = canvas.getContext('2d');
+var startX = 0;
+var startY = 0;
+var draw=false;
+var shape = "horizontal_triangle";
+canvas.onmousedown = function(e) {
+	startX = e.pageX;
+	startY = e.pageY;
+	draw=true;
+}
+canvas.onmousemove = function(e) {
+	if(draw) {
+		if(shape == "rectangle") {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+			context.strokeRect(startX, startY, e.pageX - startX, e.pageY - startY);
+		}
+		else if(shape == "circle") {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+			context.beginPath();
+    		context.arc(startX, startY, Math.max(Math.abs(e.pageX-startX), Math.abs(e.pageY-startY)), 0, Math.PI * 2, true); 
+    		context.stroke();
+		}
+		else if(shape == "vertical_triangle") {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+			context.beginPath();
+			context.moveTo(startX, startY);
+    		context.lineTo(e.pageX, e.pageY);
+    		context.lineTo(2*startX - e.pageX, e.pageY);
+    		context.lineTo(startX, startY);
+    		context.stroke();
+		}
+		else if(shape = "horizontal_triangle") {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+			context.beginPath();
+			context.moveTo(startX, startY);
+    		context.lineTo(e.pageX, e.pageY);
+    		context.lineTo(e.pageX, 2*startY - e.pageY);
+    		context.lineTo(startX, startY);
+    		context.stroke();
+		}
+	}
+}
+canvas.onmouseup = function(e) {
+	draw = false;
+}
+canvas.onmouseleave = function(e) {
+	draw = false;
+}
+
+</script>
+</body>
+</html>
