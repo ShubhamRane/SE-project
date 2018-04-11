@@ -16,10 +16,10 @@ mdataset = ['apple', 'axe', 'hat', 'butterfly', 'fan']
 import pickle
 clf = pickle.load(open('clf_rf.pickle', 'r'))
 
-from convert import test
-path = "/path/to/image";
-x = test.imageprepare(path);
-
+import test
+#path = "/path/to/image";
+#x = test.imageprepare(path);
+#TODO:try catch for exceptions
 import sys
 if len(sys.argv) == 2:
     #path of the uploaded image as given by php
