@@ -30,6 +30,7 @@ var shape = null;
 var eraser_size = null;
 var eraser_continue = false;
 var draw_image = false, image_resize = false;
+var min_x, min_y, max_x, max_y;
 
 context.fillStyle = "white";
 context.fillRect(0, 0, canvas.width, canvas.height);
@@ -100,7 +101,7 @@ document.getElementById('FillButton').addEventListener('click', function(e){
 		});
 document.getElementById('eraser_size').addEventListener('change', function(e) {
 		document.getElementById('eraser').classList.add('invisible');
-		eraser_size = this.value;
+		getRecommendedPictures(this.value);
 		});
 
 
@@ -231,6 +232,7 @@ function redraw() {
 	context.lineWidth = curr_width;
 
 	for(var i=0; i < images.length; i ++) {
+		console.log('Here', images[i]);
 
 		context.drawImage(images[i].image, images[i].x, images[i].y, images[i].width, images[i].height); 
 	}
@@ -552,18 +554,140 @@ function download(){
 
 
 
+
+
+
+function cropCanvas() {
+	var x_array = clickX;
+	var y_array = clickY;
+
+	for(var i = 0; i < shapes.length; i ++) {
+		if(shapes[i].name == "circle") {
+			x_array.push(shapes[i].x + shapes[i].radius);
+			x_array.push(shapes[i].x - shapes[i].radius);
+			y_array.push(shapes[i].y + shapes[i].radius);
+			y_array.push(shapes[i].y - shapes[i].radius);
+		}
+		else if(shapes[i].name == "rectangle") {
+			x_array.push(shapes[i].x + shapes[i].shape_width);
+			x_array.push(shapes[i].x);
+			y_array.push(shapes[i].y + shapes[i].height);
+			y_array.push(shapes[i].y);
+		}
+		else {
+			x_array.push(shapes[i].point1X);
+			x_array.push(shapes[i].point2X);
+			x_array.push(shapes[i].point3X);
+			y_array.push(shapes[i].point1Y);
+			y_array.push(shapes[i].point2Y);
+			y_array.push(shapes[i].point3Y);
+
+		}
+
+	}
+	for(var i = 0; i < images.length; i ++) {
+		x_array.push(images[i].x);
+		x_array.push(images[i].x + images[i].width);
+		y_array.push(images[i].y);
+		y_array.push(images[i].y + images[i].height);
+	}
+
+
+	min_x = Math.min.apply(null, x_array) >= 0 ? Math.min.apply(null, x_array) : 0;
+	max_x = Math.max.apply(null, x_array) >= 0 ? Math.max.apply(null, x_array) : 0;
+	min_y = Math.min.apply(null, y_array) >= 0 ? Math.min.apply(null, y_array) : 0;
+	max_y = Math.max.apply(null, y_array) >= 0 ? Math.max.apply(null, y_array) : 0;
+
+	min_x = Math.max(0, min_x-5);
+	max_x = Math.min(canvas.width, max_x+5);
+	min_y = Math.max(0, min_y-5);
+	max_y = Math.min(canvas.height, max_y + 5);
+
+
+	var newCanvas = document.createElement('canvas');
+	newCanvas.width = max_x - min_x;
+	newCanvas.height = max_y - min_y;
+
+	var newContext = newCanvas.getContext('2d');
+	newContext.drawImage(canvas, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, max_x - min_x, max_y - min_y);
+	return newCanvas;
+}
+
+function show_recommendations(e) {
+
+		
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.drawImage(e, 0, 0);
+
+	paint = false;
+	clickX = [];
+	clickY = [];
+	clickDrag = [];
+	curr_color = "black";
+	curr_width = 2;
+	counter = 0;
+	curr = 0;
+	number_of_points = [];
+	color_array = [];
+	width_array = [];
+	images = [];
+	shape = null;
+	eraser_size = null;
+	eraser_continue = false;
+	draw_image = false;
+	image_resize = false;
+
+	images.push({image:e, x:min_x, y:min_y, width:max_x-min_x, height:max_y-min_y});
+
+	redraw();
+	
+}
+
+function getRecommendedPictures(res) {
+	var dict = {
+			'axe': ['recommend/axe1.png', 'recommend/axe2.png', 'recommend/axe3.png', 'recommend/axe4.png'],
+			'fan': ['recommend/fan1.png', 'recommend/fan2.png', 'recommend/fan3.png', 'recommend/fan4.png'],
+			'butterfly': ['recommend/butterfly1.png', 'recommend/butterfly2.png', 'recommend/butterfly3.png', 'recommend/butterfly4.png'],
+			'hat': ['recommend/hat1.png', 'recommend/hat2.png', 'recommend/hat3.png', 'recommend/hat4.png'],
+			'apple': ['recommend/apple1.png', 'recommend/apple2.png', 'recommend/apple3.png', 'recommend/apple4.png'],
+			'pizza': ['recommend/pizza1.png', 'recommend/pizza2.png', 'recommend/pizza3.png', 'recommend/pizza4.png'],
+			'snowman': ['recommend/snowman1.png', 'recommend/snowman2.png', 'recommend/snowman3.png', 'recommend/snowman4.png'],
+			'rain': ['recommend/rain1.png', 'recommend/rain2.png', 'recommend/rain3.png', 'recommend/rain4.png'],
+			'smiley_face': ['recommend/smiley_face1.png', 'recommend/smiley_face2.png', 'recommend/smiley_face3.png', 'recommend/smiley_face4.png']
+
+				};
+	var images1 = dict[res];
+	
+	document.getElementById('upper').innerHTML = "";
+	for(var i=0; i < images1.length; i ++) {
+		document.getElementById('upper').innerHTML += '<li><a href="#"><img class="recommend" onclick="show_recommendations(this)" src=' + images1[i] + '></a></li>';
+		
+
+	}
+
+	responsiveVoice.speak("It's a" + res);
+
+
+}
+
+
+
+
 //For precdiction of image
 document.getElementById('predict').addEventListener('click', function(e) {
-
+	var newCanvas = cropCanvas();
 	var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-	var urlData = canvas.toDataURL("image/png");
+	var urlData = newCanvas.toDataURL("image/png");
 	//console.log(imageData);
 	console.log(urlData);
 	var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
 	    console.log(this.status);
             if (this.readyState == 4 && this.status == 200) {
-                console.log( this.responseText );
+                var res = this.responseText;
+		res = res.trim();
+		console.log(res);
+                getRecommendedPictures(res);
             }
         };
         xmlhttp.open("POST", "cgi/predict.php", true);

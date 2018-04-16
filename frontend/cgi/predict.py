@@ -10,11 +10,11 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 
-mdataset = ['axe', 'fab', 'butterfly', 'hat', 'apple']
+mdataset = ['fan', 'smiley_face', 'hat']
 
 ### store the classifier
 import pickle
-clf = pickle.load(open('clf_rf_temp.pickle', 'r'))
+clf = pickle.load(open('clf_2.pickle', 'r'))
 
 import test
 #path = "/path/to/image";
@@ -28,10 +28,12 @@ if len(sys.argv) == 2:
     x = test.imageprepare(path)
     #predict the value and find the name of object
     prediction = int ( clf.predict( [x] )[0] )
-    #print(len(x));
+    #print clf.predict_proba([x])
+    print( mdataset[prediction] )
     x = np.array(x);
-    #plt.imshow(x.reshape((28,28)), cmap='gray_r', interpolation='nearest');
-    #//plt.show();
+    x = np.concatenate([x], axis=0).astype('float32');
+    plt.imshow(x.reshape((28,28)), cmap='gray_r', interpolation='nearest');
+    plt.show();
     print( mdataset[prediction] )
 else:
     print("Failure")

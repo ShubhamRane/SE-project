@@ -87,6 +87,9 @@
                                 <li><a href="#"><button type="button" class="btn btn-success" id="predict">Predict</button></a></li>
                                 
                             </ul>
+                             <ul class="nav navbar-nav navbar-right" id="upper">
+                           
+                            </ul>
                         </div>
                     </div>
                 </nav>
@@ -98,12 +101,12 @@
                     <div class="row">
 
                         <!-- toolbox -->
-                        <div class="col-sm-2">
+                        <div class="col-sm-2" id="icons">
                             <div class="row toolbar">
                                 <input type="file" id="selectedFile" style="display: none;" />
                                 <button onclick="document.getElementById('selectedFile').click();" class="button" id="SelectButton">
                                 <img src="image/select.png"></button>
-                                <div class="button_span invisible" id="Select">Select</div>
+                                <div class="button_span invisible" id="Select">File</div>
                             </div>
                             <div class="row toolbar">
                                 <button class="button" id="DrawButton"><img src="image/draw.png"></button>
@@ -113,10 +116,10 @@
                                 </form>
                             </div>
                             <div class="row toolbar">
-                                <button class="button" id="EraserButton"><img src="image/eraser.png"></button>
-                                <div class="button_span invisible" id="Eraser" style="position:absolute;margin-top:25px;">Eraser</div>
+                                <button class="button" id="EraserButton"><img src="image/text.png"></button>
+                                <div class="button_span invisible" id="Eraser" style="position:absolute;margin-top:25px;">Text</div>
                                 <form class="invisible" id="eraser" >
-                                    <input type="range" min="2" max="40" step="2" id="eraser_size"></input>
+                                    <input type="text" id="eraser_size"></input>
                                 </form>
                             </div>
                             <div class="row toolbar">
@@ -164,8 +167,7 @@
                                 <a id="downloader" download="image.png"><button class="button" type="button" onClick="download()" id="DownloadButton"><img src="image/download.png"></button></a>
                                 <div class="button_span invisible" id="Download">Download</div>
                             </div>
-
-
+				
                         </div>
 
                         <!-- drawing pane -->
@@ -203,6 +205,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src='https://code.responsivevoice.org/responsivevoice.js'></script>
         <script src="canvas.js"></script>
 
         <script type="text/javascript">
@@ -276,7 +279,7 @@
             });
 
 
-
+            document.getElementById('upper').innerHTML = ""
 
 
         </script>
